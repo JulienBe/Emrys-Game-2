@@ -1,0 +1,12 @@
+[package]
+name = "emrys_game_2"
+version = "0.1.0"
+edition = "2021"
+
+[window_setup]
+title = "Emrys Game 2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ggez = "0.8.1"
