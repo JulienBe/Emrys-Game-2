@@ -1,9 +1,11 @@
 use ggez::{Context, GameError, GameResult};
 use ggez::event::EventHandler;
 use ggez::graphics::{Canvas, Color, DrawParam, Image as Img};
+use ggez::input::keyboard::{KeyCode, KeyInput};
 
 pub(crate) struct MainState {
   assets: Assets,
+  input_state: InputState,
   block: Block,
 }
 impl MainState {
@@ -11,6 +13,7 @@ impl MainState {
 
     Ok(MainState {
       assets: Assets::new(ctx)?,
+      input_state: InputState::default(),
       block: Block::new().unwrap(),
     })
   }
@@ -32,8 +35,26 @@ impl EventHandler<GameError> for MainState {
     canvas.finish(ctx)?;
     Ok(())
   }
+  fn key_down_event(&mut self, ctx: &mut Context, input: KeyInput, _repeated: bool) -> Result<(), GameError> {
+    match input.keycode {
+      Some(KeyCode::Up) => self.input_state.dir = Dir::Up,
+      Some(KeyCode::Down) => self.input_state.dir = Dir::Down,
+      Some(KeyCode::Left) => self.input_state.dir = Dir::Left,
+      Some(KeyCode::Right) => self.input_state.dir = Dir::Right,
+      _ => (),
+    }
+    Ok(())
+  }
 }
-
+enum Dir { Up,  Down,  Left,  Right,  None }
+struct InputState {
+  dir: Dir,
+}
+impl Default for InputState {&
+  fn default() -> Self {
+    InputState { dir: Dir::None }
+  }
+}
 struct Assets {
   block_imgs: [Img; 2],
 }
