@@ -3,6 +3,9 @@ use ggez::event::EventHandler;
 use ggez::graphics::{Canvas, Color, DrawParam, Image as Img};
 use ggez::input::keyboard::{KeyCode, KeyInput};
 
+const cell_size: f32 = 160.0;
+const half_cell_size: f32 = cell_size / 2.0;
+
 pub(crate) struct MainState {
   assets: Assets,
   input_state: InputState,
@@ -10,7 +13,6 @@ pub(crate) struct MainState {
 }
 impl MainState {
   pub(crate) fn new(ctx: &mut Context) -> GameResult<MainState> {
-
     Ok(MainState {
       assets: Assets::new(ctx)?,
       input_state: InputState::default(),
@@ -21,14 +23,25 @@ impl MainState {
 
 impl EventHandler<GameError> for MainState {
   fn update(&mut self, _ctx: &mut Context) -> GameResult {
+    match self.input_state.dir {
+      Dir::Up => self.block.cell_y -= 1,
+      Dir::Down => self.block.cell_y += 1,
+      Dir::Left => self.block.cell_x -= 1,
+      Dir::Right => self.block.cell_x += 1,
+      Dir::None => {}
+    }
+    self.input_state.dir = Dir::None;
+    self.block.actual_x += ((self.block.cell_x as f32 * cell_size) - self.block.actual_x) / 10.0;
+    self.block.actual_y += ((self.block.cell_y as f32 * cell_size) - self.block.actual_y) / 10.0;
     Ok(())
   }
   fn draw(&mut self, ctx: &mut Context) -> GameResult {
     let mut canvas = Canvas::from_frame(ctx, Color::from([0.0, 0.0, 0.0, 1.0]));
     let block_img = self.assets.block_img(&self.block);
+
     let draw_params = DrawParam::new()
-      .dest([50.0, 50.0])
-      .scale([2.0, 2.0])
+      .dest([self.block.actual_x + half_cell_size, self.block.actual_y + half_cell_size])
+      .scale([0.5, 0.5])
       .offset([0.5, 0.5]);
     canvas.draw(block_img, draw_params);
 
@@ -50,7 +63,7 @@ enum Dir { Up,  Down,  Left,  Right,  None }
 struct InputState {
   dir: Dir,
 }
-impl Default for InputState {&
+impl Default for InputState {
   fn default() -> Self {
     InputState { dir: Dir::None }
   }
@@ -72,12 +85,12 @@ impl Assets {
   }
 }
 struct Block {
-  cell_x: i8,
-  cell_y: i8,
+  cell_x: i8,  cell_y: i8,
+  actual_x: f32,  actual_y: f32,
   lvl: i8,
 }
 impl Block {
   fn new() -> GameResult<Block> {
-    Ok(Block { cell_x: 0, cell_y: 0, lvl: 1, })
+    Ok(Block { cell_x: 0, cell_y: 0, actual_x: 0.0, actual_y: 0.0, lvl: 1, })
   }
 }
