@@ -2,7 +2,7 @@ mod states;
 
 use std::{env, path};
 use std::path::PathBuf;
-use ggez::{conf, ContextBuilder, event, GameResult};
+use ggez::{ContextBuilder, event, GameResult};
 use ggez::conf::{WindowMode, WindowSetup};
 
 pub fn main() -> GameResult {

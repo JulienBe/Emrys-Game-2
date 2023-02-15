@@ -10,3 +10,4 @@ title = "Emrys Game 2"
 
 [dependencies]
 ggez = "0.8.1"
+rand = "0.8.5"
